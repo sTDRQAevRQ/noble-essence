@@ -1,0 +1,306 @@
+<?php get_header(); ?>
+
+<!-- HEADER NOBLE ESSENCE -->
+<header class="ne-header">
+  <a href="<?php echo home_url(); ?>" class="ne-logo">Noble Essence</a>
+  <nav>
+    <ul class="ne-nav">
+      <li><a href="<?php echo home_url('/parfums/'); ?>">Parfums</a></li>
+      <li><a href="<?php echo home_url('/blog/'); ?>">Blog</a></li>
+      <li><a href="<?php echo home_url('/la-maison/'); ?>">La Maison</a></li>
+      <li><a href="<?php echo home_url('/contact/'); ?>">Contact</a></li>
+    </ul>
+  </nav>
+  <a href="<?php echo wc_get_cart_url(); ?>" class="ne-cart">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="<?php echo '#c9a84c'; ?>" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+  </a>
+  <button class="ne-burger" aria-label="Menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+
+<!-- MENU MOBILE -->
+<div class="ne-mobile-menu">
+  <button class="ne-mobile-close">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <nav class="ne-mobile-nav">
+    <span class="label-or">La Collection</span>
+    <a href="<?php echo home_url('/parfums/samarcande/'); ?>">Samarcande</a>
+    <a href="<?php echo home_url('/parfums/yuzu-nara/'); ?>">Yuzu Nara</a>
+    <a href="<?php echo home_url('/parfums/rio-grande/'); ?>">Rio Grande</a>
+    <a href="<?php echo home_url('/parfums/'); ?>">Voir tous les parfums</a>
+    <span class="label-or">L'Univers</span>
+    <a href="<?php echo home_url('/categorie/parfums-orientaux-epices/'); ?>">Parfums orientaux et épicés</a>
+    <a href="<?php echo home_url('/categorie/parfums-citruses-floraux/'); ?>">Parfums citruses et floraux</a>
+    <a href="<?php echo home_url('/categorie/parfums-chauds-resineux/'); ?>">Parfums chauds et résineux</a>
+    <span class="label-or">La Maison</span>
+    <a href="<?php echo home_url('/blog/'); ?>">Le Blog</a>
+    <a href="<?php echo home_url('/la-maison/'); ?>">La Maison</a>
+    <a href="<?php echo home_url('/contact/'); ?>">Contact</a>
+  </nav>
+</div>
+
+<!-- SECTION 1 : HERO -->
+<section class="ne-hero">
+  <div class="ne-hero-bg" style="background-image: url('<?php echo get_field('hero_image') ? get_field('hero_image')['url'] : ''; ?>')"></div>
+  <div class="ne-hero-overlay"></div>
+  <div class="ne-hero-content">
+    <span class="label-or">Extrait de Parfum · Parfumerie de Niche</span>
+    <h1>Des parfums niche qui laissent une empreinte</h1>
+    <span class="ne-hero-tagline">Le sillage comme territoire.</span>
+    <div class="ne-hero-ctas">
+      <a href="#parfums" class="ne-btn">Découvrir la collection</a>
+      <a href="<?php echo home_url('/blog/extrait-de-parfum-guide/'); ?>" class="ne-btn-text">Qu'est-ce qu'un extrait de parfum ? →</a>
+    </div>
+  </div>
+  <div class="ne-scroll-arrow">
+    <svg width="24" height="40" viewBox="0 0 24 40"><path d="M12 2v28M4 22l8 8 8-8"/></svg>
+  </div>
+</section>
+
+<!-- SECTION 2 : PHRASE ÉDITORIALE -->
+<section class="ne-editorial">
+  <div class="ne-separator"></div>
+  <blockquote>Une matière. Un territoire. Une trace.</blockquote>
+  <div class="ne-separator"></div>
+</section>
+
+<!-- SECTION 3 : COLLECTION PARFUMS -->
+<section class="ne-section" id="parfums">
+  <div class="ne-section-header ne-fade-in">
+    <span class="label-or">La Collection</span>
+    <h2>Extraits de parfum niche — Noble Essence</h2>
+    <p>Trois créations intenses. Tabac, cuir, agrumes, encens, épices. Des parfums orientaux et citruses construits pour durer.</p>
+  </div>
+  <div class="ne-products-grid">
+    <?php
+    $products = new WP_Query([
+        'post_type'      => 'product',
+        'posts_per_page' => 6,
+        'orderby'        => 'menu_order',
+        'order'          => 'ASC',
+        'post_status'    => 'publish',
+    ]);
+    $accents = [
+        'samarcande' => ['color' => '#b8863a', 'famille' => 'Épicé · Tabac · Cuir', 'desc' => 'Safran, cannelle, labdanum. Une caravane au crépuscule.'],
+        'yuzu-nara'  => ['color' => '#d4c47a', 'famille' => 'Citrus · Floral · Japonais', 'desc' => 'Cédrat, yuzu, lotus. L\'air d\'un jardin de pierre.'],
+        'rio-grande' => ['color' => '#c4923a', 'famille' => 'Agrumes · Encens · Vanille', 'desc' => 'Pamplemousse, sel, myrrhe. Le désert après la pluie.'],
+    ];
+    if ($products->have_posts()) :
+        while ($products->have_posts()) : $products->the_post();
+            $slug   = get_post_field('post_name', get_the_ID());
+            $accent = $accents[$slug] ?? ['color' => '#c9a84c', 'famille' => '', 'desc' => ''];
+            $price  = get_post_meta(get_the_ID(), '_regular_price', true);
+            $cat    = get_the_terms(get_the_ID(), 'product_cat');
+            $cat_link = $cat ? get_term_link($cat[0]) : '#';
+            $cat_name = $cat ? $cat[0]->name : '';
+    ?>
+    <article class="ne-product-card ne-fade-in">
+      <a href="<?php the_permalink(); ?>">
+        <?php if (has_post_thumbnail()) : ?>
+          <?php the_post_thumbnail('large', ['class' => 'ne-product-card-img', 'alt' => get_the_title() . ' — extrait de parfum niche — Noble Essence', 'loading' => 'lazy']); ?>
+        <?php else : ?>
+          <div class="ne-product-card-img" style="background:#1a1a1a;min-height:300px;"><!-- ACF : packshot <?php echo $slug; ?> --></div>
+        <?php endif; ?>
+      </a>
+      <div class="ne-product-card-body">
+        <span class="ne-product-famille" style="color:<?php echo $accent['color']; ?>"><?php echo $accent['famille']; ?></span>
+        <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+        <p><?php echo $accent['desc']; ?></p>
+        <?php if ($price) : ?><div class="ne-product-price"><?php echo $price; ?> €</div><?php endif; ?>
+        <a href="<?php the_permalink(); ?>" class="ne-btn-text">Découvrir <?php the_title(); ?>, extrait <?php echo strtolower($accent['famille']); ?> →</a>
+        <?php if ($cat_name) : ?>
+        <br><a href="<?php echo $cat_link; ?>" class="ne-btn-text" style="font-size:12px;margin-top:8px;display:inline-block;">Voir tous nos parfums <?php echo strtolower($cat_name); ?> →</a>
+        <?php endif; ?>
+      </div>
+    </article>
+    <?php endwhile; wp_reset_postdata(); endif; ?>
+  </div>
+  <div class="ne-products-cta ne-fade-in">
+    <a href="<?php echo home_url('/parfums/'); ?>" class="ne-btn">Voir toute la collection →</a>
+  </div>
+</section>
+
+<!-- SECTION 4 : UNIVERS / MANIFESTE -->
+<section class="ne-univers">
+  <?php $univers_img = get_field('univers_image'); ?>
+  <?php if ($univers_img) : ?>
+    <img src="<?php echo $univers_img['url']; ?>" alt="Univers Noble Essence — parfumerie niche française" class="ne-univers-img" loading="lazy">
+  <?php else : ?>
+    <div class="ne-univers-img"><!-- ACF : univers_image --></div>
+  <?php endif; ?>
+  <div class="ne-univers-content ne-fade-in">
+    <span class="label-or">L'Esprit Noble Essence</span>
+    <h2>Quand le parfum devient signature</h2>
+    <p>Un <a href="<?php echo home_url('/blog/extrait-de-parfum-guide/'); ?>">extrait de parfum</a> concentre l'essentiel. Vingt pour cent de matières. Un sillage qui traverse les heures. Rien de superflu.</p>
+    <p>Chaque formule naît d'un territoire. Une épice de route, une résine ancienne, un agrume cueilli à l'aube. Les <a href="<?php echo home_url('/la-maison/'); ?>">matières premières</a> dictent tout.</p>
+    <p>Noble Essence refuse le parfum standardisé. Trois créations. Des caractères affirmés. Pour celles et ceux qui savent ce qu'ils portent.</p>
+    <div class="ne-univers-cta">
+      <a href="<?php echo home_url('/la-maison/'); ?>" class="ne-btn-text">La philosophie de la maison →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5 : MATIÈRES SIGNATURES -->
+<section class="ne-section ne-section--alt2">
+  <div class="ne-section-header ne-fade-in">
+    <span class="label-or">Les Matières</span>
+    <h2>Les matières qui construisent nos parfums</h2>
+  </div>
+  <div class="ne-matieres-grid">
+    <?php
+    $matieres = [
+      'tabac'  => ['label' => 'Le tabac en parfumerie',  'desc' => 'Sec. Profond. Animal.',   'url' => home_url('/tabac-en-parfumerie/'),  'acf' => 'matiere_tabac_image'],
+      'cuir'   => ['label' => 'Le cuir en parfumerie',   'desc' => 'Noble. Dense. Tenace.',    'url' => home_url('/cuir-en-parfumerie/'),   'acf' => 'matiere_cuir_image'],
+      'yuzu'   => ['label' => 'Le yuzu en parfumerie',   'desc' => 'Vif. Zesté. Japonais.',   'url' => home_url('/yuzu-en-parfumerie/'),   'acf' => 'matiere_yuzu_image'],
+      'encens' => ['label' => "L'encens en parfumerie",  'desc' => 'Fumé. Résineux. Sacré.',   'url' => home_url('/encens-en-parfumerie/'), 'acf' => 'matiere_encens_image'],
+    ];
+    foreach ($matieres as $key => $m) :
+      $img = get_field($m['acf']);
+    ?>
+    <a href="<?php echo $m['url']; ?>" class="ne-matiere-item ne-fade-in">
+      <?php if ($img) : ?>
+        <img src="<?php echo $img['url']; ?>" alt="<?php echo $m['label']; ?> — Noble Essence" class="ne-matiere-img" loading="lazy">
+      <?php else : ?>
+        <div class="ne-matiere-img" style="min-height:200px;"><!-- ACF : <?php echo $m['acf']; ?> --></div>
+      <?php endif; ?>
+      <h3><?php echo $m['label']; ?></h3>
+      <p><?php echo $m['desc']; ?></p>
+    </a>
+    <?php endforeach; ?>
+  </div>
+</section>
+
+<!-- SECTION 6 : BLOG -->
+<?php
+$blog_posts = new WP_Query(['post_type' => 'post', 'posts_per_page' => 3, 'post_status' => 'publish']);
+if ($blog_posts->have_posts()) :
+?>
+<section class="ne-section ne-section--alt">
+  <div class="ne-section-header ne-fade-in">
+    <span class="label-or">Le Journal</span>
+    <h2>L'univers du parfum niche — Notre journal</h2>
+    <p>Guides olfactifs, matières premières et destinations. Pour comprendre et choisir son extrait de parfum.</p>
+  </div>
+  <div class="ne-blog-grid">
+    <?php $blog_posts->the_post(); ?>
+    <article class="ne-blog-article ne-fade-in">
+      <?php if (has_post_thumbnail()) : the_post_thumbnail('large', ['loading' => 'lazy']); endif; ?>
+      <div class="ne-blog-article-body">
+        <?php $cats = get_the_category(); if ($cats) : ?>
+          <a href="<?php echo get_category_link($cats[0]->term_id); ?>" class="label-or"><?php echo $cats[0]->name; ?></a>
+        <?php endif; ?>
+        <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+        <p><?php echo wp_trim_words(get_the_excerpt(), 25); ?></p>
+        <a href="<?php the_permalink(); ?>" class="ne-btn-text" style="margin-top:16px;display:inline-block;">Lire l'article →</a>
+      </div>
+    </article>
+    <div class="ne-blog-secondary">
+      <?php while ($blog_posts->have_posts()) : $blog_posts->the_post(); ?>
+      <article class="ne-blog-article ne-blog-article-small ne-fade-in">
+        <?php if (has_post_thumbnail()) : the_post_thumbnail('thumbnail', ['loading' => 'lazy']); endif; ?>
+        <div>
+          <?php $cats = get_the_category(); if ($cats) : ?>
+            <a href="<?php echo get_category_link($cats[0]->term_id); ?>" class="label-or" style="font-size:10px;"><?php echo $cats[0]->name; ?></a>
+          <?php endif; ?>
+          <h3 style="font-size:16px;"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+          <span style="font-size:12px;color:var(--color-text-secondary);"><?php echo get_the_date('d M Y'); ?></span>
+        </div>
+      </article>
+      <?php endwhile; wp_reset_postdata(); ?>
+    </div>
+  </div>
+  <div class="ne-blog-cta ne-fade-in">
+    <a href="<?php echo home_url('/blog/'); ?>" class="ne-btn-text">Voir tous les articles →</a>
+  </div>
+</section>
+<?php endif; ?>
+
+<!-- SECTION 7 : AVIS CLIENTS -->
+<?php
+$reviews = get_comments(['status' => 'approve', 'type' => 'review', 'number' => 1]);
+if (!empty($reviews)) :
+$all_reviews = get_comments(['status' => 'approve', 'type' => 'review', 'number' => 3]);
+?>
+<section class="ne-section">
+  <div class="ne-section-header ne-fade-in">
+    <span class="label-or">Ils ont choisi Noble Essence</span>
+    <h2>Ce que nos clients disent de nos parfums niche</h2>
+  </div>
+  <div class="ne-products-grid">
+    <?php foreach ($all_reviews as $review) :
+      $product = get_post($review->comment_post_ID);
+    ?>
+    <div class="ne-product-card ne-fade-in" style="padding:32px;">
+      <div style="color:var(--color-or);font-size:18px;margin-bottom:16px;">★★★★★</div>
+      <p style="font-family:var(--font-display);font-style:italic;font-size:18px;margin-bottom:20px;"><?php echo esc_html($review->comment_content); ?></p>
+      <span style="font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--color-text-secondary);"><?php echo esc_html($review->comment_author); ?></span>
+      <?php if ($product) : ?>
+        <br><a href="<?php echo get_permalink($product->ID); ?>" class="ne-btn-text" style="font-size:12px;margin-top:8px;display:inline-block;">Avis sur <?php echo esc_html($product->post_title); ?> →</a>
+      <?php endif; ?>
+    </div>
+    <?php endforeach; ?>
+  </div>
+</section>
+<?php endif; ?>
+
+<!-- SECTION 8 : NEWSLETTER -->
+<section class="ne-newsletter">
+  <span class="label-or">Restez dans l'univers</span>
+  <h2>Nouvelles créations. Matières. Destinations.</h2>
+  <p>Une newsletter rare. Comme nos parfums.</p>
+  <?php if (function_exists('mailpoet_form')) : ?>
+    [mailpoet_form id="1"]
+  <?php else : ?>
+  <form class="ne-newsletter-form" action="#" method="post">
+    <input type="email" name="email" placeholder="Votre adresse email" required>
+    <button type="submit">S'inscrire</button>
+  </form>
+  <?php endif; ?>
+</section>
+
+<!-- SECTION 9 : RÉASSURANCE -->
+<div class="ne-reassurance">
+  <span>Extrait de parfum · concentration 20%+</span>
+  <span class="ne-reassurance-sep">·</span>
+  <span>Livraison soignée · emballage protégé</span>
+  <span class="ne-reassurance-sep">·</span>
+  <span>Paiement sécurisé · CB · PayPal</span>
+</div>
+
+<!-- SECTION 10 : FOOTER -->
+<footer class="ne-footer">
+  <div class="ne-footer-grid">
+    <div>
+      <div class="ne-footer-logo">Noble Essence</div>
+      <div class="ne-footer-tagline">Le sillage comme territoire.</div>
+      <a href="mailto:nobleessenceparfum@gmail.com" style="font-size:13px;color:var(--color-text-secondary);">nobleessenceparfum@gmail.com</a>
+    </div>
+    <div>
+      <h4>Nos parfums</h4>
+      <ul>
+        <li><a href="<?php echo home_url('/parfums/samarcande/'); ?>">Samarcande — extrait tabac épicé cuir</a></li>
+        <li><a href="<?php echo home_url('/parfums/yuzu-nara/'); ?>">Yuzu Nara — parfum citrus floral</a></li>
+        <li><a href="<?php echo home_url('/parfums/rio-grande/'); ?>">Rio Grande — agrumes encens vanille</a></li>
+        <li><a href="<?php echo home_url('/categorie/parfums-orientaux-epices/'); ?>">Parfums orientaux et épicés</a></li>
+        <li><a href="<?php echo home_url('/categorie/parfums-citruses-floraux/'); ?>">Parfums citruses et floraux</a></li>
+        <li><a href="<?php echo home_url('/blog/'); ?>">Le blog Noble Essence</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>La maison</h4>
+      <ul>
+        <li><a href="<?php echo home_url('/la-maison/'); ?>">Notre philosophie</a></li>
+        <li><a href="<?php echo home_url('/blog/extrait-de-parfum-guide/'); ?>">Qu'est-ce qu'un extrait de parfum ?</a></li>
+        <li><a href="<?php echo home_url('/contact/'); ?>">Contact</a></li>
+        <li><a href="<?php echo home_url('/mentions-legales/'); ?>">Mentions légales</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ne-footer-bottom">
+    © <?php echo date('Y'); ?> Noble Essence · Tous droits réservés
+  </div>
+</footer>
+
+<?php get_footer(); ?>
