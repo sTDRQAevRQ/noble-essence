@@ -42,3 +42,34 @@ function ne_register_menus() {
     register_nav_menus(['primary'=>'Navigation principale','footer'=>'Navigation footer']);
 }
 add_action('init', 'ne_register_menus');
+
+function ne_exclude_duplicate_products_from_queries($q) {
+    if (is_admin() || !$q->is_main_query()) return;
+    if (is_front_page() || is_shop() || is_product_category() || is_product()) {
+        $tax_query = (array) $q->get('tax_query');
+        $tax_query[] = [
+            'taxonomy' => 'product_cat',
+            'field'    => 'slug',
+            'terms'    => ['non-classe'],
+            'operator' => 'NOT IN',
+        ];
+        $q->set('tax_query', $tax_query);
+    }
+}
+add_action('pre_get_posts', 'ne_exclude_duplicate_products_from_queries');
+
+function ne_related_products_args($args, $product_id) {
+    $args['tax_query'][] = [
+        'taxonomy' => 'product_cat',
+        'field'    => 'slug',
+        'terms'    => ['non-classe'],
+        'operator' => 'NOT IN',
+    ];
+    return $args;
+}
+add_filter('woocommerce_related_products_args', 'ne_related_products_args', 10, 2);
+
+function ne_remove_kadence_footer_credit() {
+    remove_action('kadence_footer', 'kadence_single_footer', 10);
+}
+add_action('wp', 'ne_remove_kadence_footer_credit', 20);

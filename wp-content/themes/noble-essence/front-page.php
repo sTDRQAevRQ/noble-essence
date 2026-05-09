@@ -1,4 +1,13 @@
-<?php get_header(); ?>
+<?php
+get_header();
+
+$ne_default_hero = home_url('/wp-content/uploads/2026/05/banniere.png');
+$ne_default_univers = home_url('/wp-content/uploads/2026/04/resine-ambre.jpg');
+$ne_default_matiere_tabac = home_url('/wp-content/uploads/2026/04/feuille-de-tabac.jpg');
+$ne_default_matiere_cuir = home_url('/wp-content/uploads/2026/04/parfum-cuir.jpg');
+$ne_default_matiere_yuzu = home_url('/wp-content/uploads/2026/04/bergamote-soleil.jpg');
+$ne_default_matiere_encens = home_url('/wp-content/uploads/2026/04/resine-ambre.jpg');
+?>
 <header class="ne-header">
   <a href="<?php echo home_url(); ?>" class="ne-logo">Noble Essence</a>
   <nav><ul class="ne-nav">
@@ -32,7 +41,8 @@
   </nav>
 </div>
 <section class="ne-hero">
-  <div class="ne-hero-bg" style="background-image:url('<?php echo get_field('hero_image') ? get_field('hero_image')['url'] : ''; ?>')"></div>
+  <?php $hero_image = get_field('hero_image'); $hero_url = ($hero_image && !empty($hero_image['url'])) ? $hero_image['url'] : $ne_default_hero; ?>
+  <div class="ne-hero-bg" style="background-image:url('<?php echo esc_url($hero_url); ?>')"></div>
   <div class="ne-hero-overlay"></div>
   <div class="ne-hero-content">
     <span class="label-or">Extrait de Parfum · Parfumerie de Niche</span>
@@ -60,8 +70,8 @@
   </div>
   <div class="ne-products-grid">
     <?php
-    $products=new WP_Query(['post_type'=>'product','posts_per_page'=>6,'orderby'=>'menu_order','order'=>'ASC','post_status'=>'publish']);
-    $accents=['samarcande'=>['color'=>'#b8863a','famille'=>'Épicé · Tabac · Cuir','desc'=>'Safran, cannelle, labdanum. Une caravane au crépuscule.'],'yuzu-nara'=>['color'=>'#d4c47a','famille'=>'Citrus · Floral · Japonais','desc'=>'Cédrat, yuzu, lotus. L\'air d\'un jardin de pierre.'],'rio-grande'=>['color'=>'#c4923a','famille'=>'Agrumes · Encens · Vanille','desc'=>'Pamplemousse, sel, myrrhe. Le désert après la pluie.']];
+    $products=new WP_Query(['post_type'=>'product','posts_per_page'=>6,'orderby'=>'menu_order','order'=>'ASC','post_status'=>'publish','post__in'=>[123,150,151]]);
+    $accents=['samarcande-extrait-de-parfum-50-ml-parfum-epice-tabac-cuir'=>['color'=>'#b8863a','famille'=>'Épicé · Tabac · Cuir','desc'=>'Safran, cannelle, labdanum. Une caravane au crépuscule.'],'yuzu-nara'=>['color'=>'#d4c47a','famille'=>'Citrus · Floral · Japonais','desc'=>'Cédrat, yuzu, lotus. L\'air d\'un jardin de pierre.'],'yuzu-nara-extrait-de-parfum-50-ml'=>['color'=>'#d4c47a','famille'=>'Citrus · Floral · Japonais','desc'=>'Cédrat, yuzu, lotus. L\'air d\'un jardin de pierre.'],'rio-grande'=>['color'=>'#c4923a','famille'=>'Agrumes · Encens · Vanille','desc'=>'Pamplemousse, sel, myrrhe. Le désert après la pluie.'],'rio-grande-extrait-de-parfum-50-ml'=>['color'=>'#c4923a','famille'=>'Agrumes · Encens · Vanille','desc'=>'Pamplemousse, sel, myrrhe. Le désert après la pluie.']];
     if($products->have_posts()):while($products->have_posts()):$products->the_post();
     $slug=get_post_field('post_name',get_the_ID());
     $accent=$accents[$slug]??['color'=>'#c9a84c','famille'=>'','desc'=>''];
@@ -90,9 +100,8 @@
   </div>
 </section>
 <section class="ne-univers">
-  <?php $img=get_field('univers_image');?>
-  <?php if($img):?><img src="<?php echo $img['url'];?>" alt="Univers Noble Essence — parfumerie niche française" class="ne-univers-img" loading="lazy">
-  <?php else:?><div class="ne-univers-img" style="min-height:600px;background:#1a1a1a;"></div><?php endif;?>
+  <?php $img=get_field('univers_image'); $univers_url = ($img && !empty($img['url'])) ? $img['url'] : $ne_default_univers; ?>
+  <img src="<?php echo esc_url($univers_url); ?>" alt="Univers Noble Essence — parfumerie niche française" class="ne-univers-img" loading="lazy">
   <div class="ne-univers-content ne-fade-in">
     <span class="label-or">L'Esprit Noble Essence</span>
     <h2>Quand le parfum devient signature</h2>
@@ -110,9 +119,18 @@
   <div class="ne-matieres-grid">
     <?php
     $matieres=['tabac'=>['label'=>'Le tabac en parfumerie','desc'=>'Sec. Profond. Animal.','url'=>home_url('/tabac-en-parfumerie/'),'acf'=>'matiere_tabac_image'],'cuir'=>['label'=>'Le cuir en parfumerie','desc'=>'Noble. Dense. Tenace.','url'=>home_url('/cuir-en-parfumerie/'),'acf'=>'matiere_cuir_image'],'yuzu'=>['label'=>'Le yuzu en parfumerie','desc'=>'Vif. Zesté. Japonais.','url'=>home_url('/yuzu-en-parfumerie/'),'acf'=>'matiere_yuzu_image'],'encens'=>['label'=>"L'encens en parfumerie",'desc'=>'Fumé. Résineux. Sacré.','url'=>home_url('/encens-en-parfumerie/'),'acf'=>'matiere_encens_image']];
-    foreach($matieres as $key=>$m):$img=get_field($m['acf']);?>
+    foreach($matieres as $key=>$m):
+      $img=get_field($m['acf']);
+      $fallbacks = [
+        'tabac' => $ne_default_matiere_tabac,
+        'cuir' => $ne_default_matiere_cuir,
+        'yuzu' => $ne_default_matiere_yuzu,
+        'encens' => $ne_default_matiere_encens,
+      ];
+      $matiere_url = ($img && !empty($img['url'])) ? $img['url'] : ($fallbacks[$key] ?? '');
+    ?>
     <a href="<?php echo $m['url'];?>" class="ne-matiere-item ne-fade-in">
-      <?php if($img):?><img src="<?php echo $img['url'];?>" alt="<?php echo $m['label'];?> — Noble Essence" class="ne-matiere-img" loading="lazy">
+      <?php if($matiere_url):?><img src="<?php echo esc_url($matiere_url); ?>" alt="<?php echo esc_attr($m['label']); ?> — Noble Essence" class="ne-matiere-img" loading="lazy">
       <?php else:?><div class="ne-matiere-img" style="min-height:200px;background:#1a1a1a;"></div><?php endif;?>
       <h3><?php echo $m['label'];?></h3>
       <p><?php echo $m['desc'];?></p>
