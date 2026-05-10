@@ -181,10 +181,7 @@ if ($blog_posts->have_posts()): ?>
   <span class="label-or">Restez dans l'univers</span>
   <h2 style="color:#f5f0e8;">Nouvelles créations. Matières. Destinations.</h2>
   <p style="color:#f5f0e8;">Une newsletter rare. Comme nos parfums.</p>
-  <form class="ne-newsletter-form" action="#" method="post">
-    <input type="email" name="email" placeholder="Votre adresse email" required>
-    <button type="submit">S'inscrire</button>
-  </form>
+  <?php echo str_replace(array("Email Address", "Subscribe"), array("Votre adresse email", "S'inscrire"), do_shortcode("[sibwp_form id=2]")); ?>
 </section>
 
 <!-- REASSURANCE -->
