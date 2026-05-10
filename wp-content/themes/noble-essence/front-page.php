@@ -141,7 +141,7 @@
 
 <!-- BLOG -->
 <?php
-$blog_posts = new WP_Query(['post_type' => 'post', 'posts_per_page' => 3, 'post_status' => 'publish']);
+$blog_posts = new WP_Query(['post_type' => 'post', 'posts_per_page' => 8, 'post_status' => 'publish']);
 if ($blog_posts->have_posts()): ?>
 <section class="ne-section ne-section--alt">
   <div class="ne-section-header ne-fade-in">
